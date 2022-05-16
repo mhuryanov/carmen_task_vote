@@ -1,0 +1,29 @@
+{
+  "name": "ethereum-javascript-dapp",
+  "version": "1.0.0",
+  "description": "Decentralize App is a simple Tasks' App to practice the creation of a blockchain applicaciont using Solidity and Javascript.",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "npx lite-server",
+    "test": "npx truffle test",
+    "devNode": "npx ganache --deterministic --port 7545",
+    "devMigration": "npx truffle migrate --network development --reset",
+    "compile": "npx truffle compile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@truffle/contract": "^4.3.21",
+    "bootstrap": "^5.1.3",
+    "chai": "^4.3.6",
+    "truffle": "^5.5.14"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.6.0",
+    "@openzeppelin/test-helpers": "^0.5.15"
+  }
+}

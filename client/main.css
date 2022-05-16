@@ -1,0 +1,55 @@
+body {
+    background: #50B7EA;
+    color: black;
+}
+
+div.itemVotesContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div.itemVotesContainer>span {
+    text-align: left;
+}
+
+div.itemVotesContainer>div.btn {
+    text-align: center;
+    background-color: green;
+    border-radius: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    color: white;
+}
+
+.cardForm {
+    background: #0A3AA9;
+    color: white;
+}
+
+.cardForm1 {
+    background: #4A7BEC;
+    color: white;
+}
+
+div.itemVotesContainer>div.btn.removeVote {
+    background-color: red;
+}
+
+div.sortButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+div.sortButtonContainer>div#sortButton {
+    text-align: center;
+    background-color: goldenrod;
+    border-radius: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    color: white;
+}

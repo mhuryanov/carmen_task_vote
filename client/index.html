@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tasks</title>
+    <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./main.css" />
+    <!-- Google icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-body cardForm1 rounded-0 mb-4">
+                    <h1>
+                        Propón tú mismo
+                    </h1>
+                    <h6 class="text-muted">Gestión de tareas</h6>
+                    <div class="d-flex align-items-center">
+                        <span class="material-icons"> account_balance_wallet </span>
+                        <span class="ms-2">Wallet</span>
+                    </div>
+                    <span id="account"></span>
+                </div>
+
+                <form id="articleForm" class="card card-body cardForm">
+                    <h4>¿Quieres proponer una tarea?</h4>
+                    <input type="text" id="title" class="form-control border-0 rounded-0 text-dark my-4" placeholder="título de la tarea" autofocus />
+                    <textarea id="description" rows="2" class="form-control border-0 rounded-0 text-dark my-4" placeholder="Descripción de la tarea ...."></textarea>
+                    <input type="number" id="price" class="form-control bg-info border-0 rounded-0 text-light my-4" placeholder="Precio" />
+                    <input type="datetime-local" id="timeEndsAt" class="form-control bg-info border-0 rounded-0 text-light my-4" />
+                    <button class="btn cardForm1">Aceptar</button>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <div class="sortButtonContainer">
+                    <div id="sortButton" onclick="App.sortList()">Ordenar por votos</div>
+                </div>
+                <div id="articlesList"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- <script src="/libs/web3/dist/web3.min.js"></script> -->
+    <script src="/libs/@truffle/contract/dist/truffle-contract.min.js"></script>
+    <script src="./app.js"></script>
+    <script src="./ui.js"></script>
+</body>
+
+</html>
