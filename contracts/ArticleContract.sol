@@ -5,7 +5,14 @@ import "./itoken.sol";
 
 contract ArticleContract {
     uint256 public articlesCounter = 0;
+    address private tokenAddress;
     mapping(uint256 => Article) public articles;
+
+    enum VoteState {
+        None,
+        Yes,
+        No
+    }
 
     // Structs
     struct Article {
@@ -13,10 +20,11 @@ contract ArticleContract {
         string title;
         string description;
         uint256 createdAt;
-        uint256 votes;
+        uint256 votesYes;
+        uint256 votesNo;
         uint256 price;
         uint256 expires;
-        mapping(address => bool) addressesWithVote;
+        mapping(address => VoteState) addressesWithVote;
     }
     // End of structs
 
@@ -31,7 +39,7 @@ contract ArticleContract {
 
     modifier hasNotVoted(uint256 articleID) {
         require(
-            articles[articleID].addressesWithVote[msg.sender] == false,
+            articles[articleID].addressesWithVote[msg.sender] == VoteState.None,
             "Article was already voted by you!"
         );
         _;
@@ -39,7 +47,7 @@ contract ArticleContract {
 
     modifier hasVoted(uint256 articleID) {
         require(
-            articles[articleID].addressesWithVote[msg.sender] == true,
+            articles[articleID].addressesWithVote[msg.sender] != VoteState.None,
             "Article was not voted by you!"
         );
         _;
@@ -52,7 +60,8 @@ contract ArticleContract {
         string title,
         string description,
         uint256 createdAt,
-        uint256 votes,
+        uint256 votesYes,
+        uint256 votesNo,
         uint256 price,
         uint256 expires
     );
@@ -62,14 +71,16 @@ contract ArticleContract {
         string title,
         string description,
         uint256 createdAt,
-        uint256 votes,
+        uint256 votesYes,
+        uint256 votesNo,
         uint256 price,
         uint256 expires
     );
 
     // End of events
 
-    constructor() {
+    constructor(address _tokenAddress) {
+        tokenAddress = _tokenAddress;
         createArticle("My first article", "Hello world", 5, block.timestamp);
     }
 
@@ -79,17 +90,18 @@ contract ArticleContract {
         uint256 _price,
         uint256 _expires
     ) public {
+        articlesCounter++;
+
         Article storage _newArticle = articles[articlesCounter];
 
         _newArticle.id = articlesCounter;
         _newArticle.title = _title;
         _newArticle.description = _description;
         _newArticle.createdAt = block.timestamp;
-        _newArticle.votes = 0;
+        _newArticle.votesYes = 0;
+        _newArticle.votesNo = 0;
         _newArticle.price = _price;
         _newArticle.expires = _expires;
-
-        articlesCounter++;
 
         emit ArticleCreated(
             articlesCounter,
@@ -97,26 +109,32 @@ contract ArticleContract {
             _description,
             block.timestamp,
             0,
+            0,
             _price,
             _expires
         );
     }
 
-    function addVoteToArticle(uint256 articleID)
+    function addVoteToArticle(uint256 articleID, VoteState state)
         public
         articleExists(articleID)
         hasNotVoted(articleID)
     {
         Article storage _articleToUpdate = articles[articleID];
-        _articleToUpdate.votes = _articleToUpdate.votes + 1;
-        _articleToUpdate.addressesWithVote[msg.sender] = true;
+        if (state == VoteState.Yes)
+            _articleToUpdate.votesYes = _articleToUpdate.votesYes + 1;
+        else if (state == VoteState.No)
+            _articleToUpdate.votesNo = _articleToUpdate.votesNo + 1;
+
+        _articleToUpdate.addressesWithVote[msg.sender] = state;
 
         emit ArticleUpdated(
             _articleToUpdate.id,
             _articleToUpdate.title,
             _articleToUpdate.description,
             _articleToUpdate.createdAt,
-            _articleToUpdate.votes,
+            _articleToUpdate.votesYes,
+            _articleToUpdate.votesNo,
             _articleToUpdate.price,
             _articleToUpdate.expires
         );
@@ -128,25 +146,38 @@ contract ArticleContract {
         hasVoted(articleID)
     {
         Article storage _articleToUpdate = articles[articleID];
-        _articleToUpdate.votes = _articleToUpdate.votes - 1;
-        _articleToUpdate.addressesWithVote[msg.sender] = false;
+        VoteState state = _articleToUpdate.addressesWithVote[msg.sender];
+        if (state == VoteState.Yes)
+            _articleToUpdate.votesYes = _articleToUpdate.votesYes - 1;
+        else if (state == VoteState.No)
+            _articleToUpdate.votesNo = _articleToUpdate.votesNo - 1;
+        _articleToUpdate.addressesWithVote[msg.sender] = VoteState.None;
 
         emit ArticleUpdated(
             _articleToUpdate.id,
             _articleToUpdate.title,
             _articleToUpdate.description,
             _articleToUpdate.createdAt,
-            _articleToUpdate.votes,
+            _articleToUpdate.votesYes,
+            _articleToUpdate.votesNo,
             _articleToUpdate.price,
             _articleToUpdate.expires
         );
     }
 
-    function isVotedBySender(uint256 articleID)
+    function endArticle(uint256 articleID) public articleExists(articleID) {
+        Article storage article = articles[articleID];
+        if (article.votesYes > article.votesNo) {
+            Token(tokenAddress).distribute(article.price);
+        }
+        delete article.id;
+    }
+
+    function votedStateBySender(uint256 articleID)
         public
         view
         articleExists(articleID)
-        returns (bool)
+        returns (VoteState)
     {
         return articles[articleID].addressesWithVote[msg.sender];
     }

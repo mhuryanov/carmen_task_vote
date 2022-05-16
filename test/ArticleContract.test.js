@@ -4,6 +4,7 @@ const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 
 // Load compiled artifacts
 const ArticleContract = artifacts.require('ArticleContract');
+const Token = artifacts.require("Token");
 
 // Start test block
 contract('ArticleContract', function([owner, other]) {
