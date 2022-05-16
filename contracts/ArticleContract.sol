@@ -2,8 +2,9 @@
 pragma solidity ^0.8.6;
 
 import "./itoken.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ArticleContract {
+contract ArticleContract is Ownable {
     uint256 public articlesCounter = 0;
     address private tokenAddress;
     mapping(uint256 => Article) public articles;
@@ -80,6 +81,7 @@ contract ArticleContract {
     // End of events
 
     constructor(address _tokenAddress) {
+        _transferOwnership(msg.sender);
         tokenAddress = _tokenAddress;
         createArticle("My first article", "Hello world", 5, block.timestamp);
     }
@@ -165,12 +167,17 @@ contract ArticleContract {
         );
     }
 
-    function endArticle(uint256 articleID) public articleExists(articleID) {
+    function endArticle(uint256 articleID)
+        public
+        onlyOwner
+        articleExists(articleID)
+    {
         Article storage article = articles[articleID];
         if (article.votesYes > article.votesNo) {
             Token(tokenAddress).distribute(article.price);
+        } else {
+            delete article.id;
         }
-        delete article.id;
     }
 
     function votedStateBySender(uint256 articleID)

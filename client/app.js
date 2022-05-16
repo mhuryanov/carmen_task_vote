@@ -19,7 +19,7 @@ App = {
         } else if (web3) {
             web3 = new Web3(window.web3.currentProvider);
         } else {
-            console.log(
+            window.alert(
                 "No ethereum browser is installed. Try it installing MetaMask "
             );
         }
@@ -113,7 +113,7 @@ App = {
         </div>`;
     },
     renderArticlesList: () => {
-        const _itemsToRender = App.articles.sort((itemA, itemB) => App.sortedByVotes ? itemB.votesYes - itemA.votesYes : itemA.id - itemB.id).map(item => App.renderArticle(item));
+        const _itemsToRender = App.articles.sort((itemA, itemB) => App.sortedByVotes ? itemB.votesYes - itemB.votesNo - (itemA.votesYes - itemA.votesNo) : itemA.id - itemB.id).map(item => App.renderArticle(item));
 
         document.querySelector("#articlesList").innerHTML = _itemsToRender.join('\n');
     },
