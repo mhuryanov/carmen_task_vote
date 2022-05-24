@@ -25,6 +25,7 @@ contract ArticleContract is Ownable {
         uint256 votesNo;
         uint256 price;
         uint256 expires;
+        bool ended;
         mapping(address => VoteState) addressesWithVote;
     }
     // End of structs
@@ -75,7 +76,8 @@ contract ArticleContract is Ownable {
         uint256 votesYes,
         uint256 votesNo,
         uint256 price,
-        uint256 expires
+        uint256 expires,
+        bool ended
     );
 
     // End of events
@@ -138,7 +140,8 @@ contract ArticleContract is Ownable {
             _articleToUpdate.votesYes,
             _articleToUpdate.votesNo,
             _articleToUpdate.price,
-            _articleToUpdate.expires
+            _articleToUpdate.expires,
+            _articleToUpdate.ended
         );
     }
 
@@ -163,7 +166,8 @@ contract ArticleContract is Ownable {
             _articleToUpdate.votesYes,
             _articleToUpdate.votesNo,
             _articleToUpdate.price,
-            _articleToUpdate.expires
+            _articleToUpdate.expires,
+            _articleToUpdate.ended
         );
     }
 
@@ -178,6 +182,18 @@ contract ArticleContract is Ownable {
         } else {
             delete article.id;
         }
+        article.ended = true;
+        emit ArticleUpdated(
+            article.id,
+            article.title,
+            article.description,
+            article.createdAt,
+            article.votesYes,
+            article.votesNo,
+            article.price,
+            article.expires,
+            article.ended
+        );
     }
 
     function votedStateBySender(uint256 articleID)

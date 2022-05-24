@@ -66,6 +66,7 @@ App = {
                 votesNo: article[5].toNumber(),
                 price: article[6].toNumber(),
                 expires: article[7],
+                ended:article[8],
                 votedStateByUser: votedState.toNumber()
             })
         }
@@ -84,7 +85,7 @@ App = {
         App.renderArticlesList();
     },
     renderArticle: (itemData) => {
-        new Date() < new Date(itemData.expires * 1000) ? end_disabled = true : end_disabled = false;
+        new Date() < new Date(itemData.expires * 1000) || itemData.ended ? end_disabled = true : end_disabled = false;
         return `
         <div class="card bg-secundary rounded-0 mb-2">
             <div class="card-header d-flex bg-dark text-white justify-content-between align-items-center">
@@ -102,10 +103,10 @@ App = {
                     <span class="text-muted" style="margin-right:10px;">Precio: ${itemData.price.toLocaleString()}</span>
                     <span class="text-muted">Votos(YES): ${itemData.votesYes.toLocaleString()}</span>
                     <span class="text-muted">Votos(NO): ${itemData.votesNo.toLocaleString()}</span>
-                    <div class="btn ${itemData.votedStateByUser == 1 ? "disabled" : ""} ${itemData.votedStateByUser ? 'removeVote' : ''}" onclick="App.voteArticle(${itemData.id}, ${itemData.votedStateByUser ? VOTESTATE_NONE : VOTESTATE_NO})" style="float:right;">
+                    <div class="btn ${itemData.votedStateByUser == 1||itemData.ended ? "disabled" : ""} ${itemData.votedStateByUser ? 'removeVote' : ''}" onclick="App.voteArticle(${itemData.id}, ${itemData.votedStateByUser ? VOTESTATE_NONE : VOTESTATE_NO})" style="float:right;">
                         ${itemData.votedStateByUser != 2 ? "No" : "Remover Voto"}
                     </div>
-                    <div class="btn ${itemData.votedStateByUser == 2 ? "disabled" : ""} ${itemData.votedStateByUser ? 'removeVote' : ''}" onclick="App.voteArticle(${itemData.id}, ${itemData.votedStateByUser ? VOTESTATE_NONE : VOTESTATE_YES})" style="float:right;margin-right:10px;">
+                    <div class="btn ${itemData.votedStateByUser == 2||itemData.ended ? "disabled" : ""} ${itemData.votedStateByUser ? 'removeVote' : ''}" onclick="App.voteArticle(${itemData.id}, ${itemData.votedStateByUser ? VOTESTATE_NONE : VOTESTATE_YES})" style="float:right;margin-right:10px;">
                         ${itemData.votedStateByUser != 1 ? "Yes" : "Remover Voto"}
                     </div>
                 </div>
@@ -149,7 +150,6 @@ App = {
     },
     endArticle: async (articleID) => {
         try {
-
             await App.ArticleContract.endArticle(articleID, { from: App.account });
             App.loadAndRenderArticles();
         } catch (error) {
